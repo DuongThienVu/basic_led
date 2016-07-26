@@ -1,0 +1,80 @@
+#include <gtk/gtk.h>
+#include <wiringPi.h>
+
+void
+bat (void)
+{
+  g_print ("Da Bat\n");
+  digitalWrite (0, HIGH);
+}
+void
+tat (void)
+{
+  g_print ("Da Tat\n");
+  digitalWrite (0,LOW);
+}
+
+void
+destroy (void)
+{
+  gtk_main_quit ();
+}
+
+int
+main (int argc, char *argv[])
+{
+  wiringPiSetup () ;
+  pinMode (0, OUTPUT) ;
+
+  GtkWidget *window;
+  GtkWidget *button1;
+  GtkWidget *button2;
+  GtkWidget *button3;
+  GtkWidget *box;
+
+  gtk_init (&argc, &argv);
+
+  window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
+  gtk_window_set_title(GTK_WINDOW(window),"Bat Tat LED");
+  gtk_signal_connect (GTK_OBJECT (window), "destroy",
+		      GTK_SIGNAL_FUNC (destroy), NULL);
+  gtk_container_set_border_width (GTK_CONTAINER (window), 100);
+  gtk_widget_realize(window);
+
+  box=gtk_vbox_new(0,0);
+
+  button1 = gtk_button_new_with_label ("Bat");
+
+  gtk_signal_connect (GTK_OBJECT (button1), "clicked",
+		      GTK_SIGNAL_FUNC (bat), NULL);
+ 
+
+  gtk_box_pack_start(GTK_BOX(box),button1,0,0,0);
+
+  button2 = gtk_button_new_with_label ("Tat");
+
+  gtk_signal_connect (GTK_OBJECT (button2), "clicked",
+		      GTK_SIGNAL_FUNC (tat), NULL);
+
+  gtk_box_pack_start(GTK_BOX(box),button2,0,0,10);
+
+  button3 = gtk_button_new_with_label ("Thoat");
+
+  gtk_signal_connect (GTK_OBJECT (button3), "clicked",
+		      GTK_SIGNAL_FUNC (destroy), NULL);
+  gtk_signal_connect_object (GTK_OBJECT (button3), "clicked",
+			     GTK_SIGNAL_FUNC (gtk_widget_destroy),
+			     GTK_OBJECT (window));
+  gtk_box_pack_start(GTK_BOX(box),button3,0,0,30);
+
+
+  gtk_container_add(GTK_CONTAINER(window),box); 
+
+
+
+  gtk_widget_show_all (window);
+
+  gtk_main ();
+
+  return 0;
+}
